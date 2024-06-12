@@ -1,8 +1,7 @@
 import sha1 from 'sha1';
 import { ObjectId } from 'mongodb';
 import dbClient from '../utils/db';
-import redisClient from '../utils/redis';
-
+import { redisClient } from '../utils/redis';
 
 class UsersController {
   static async postNew(request, response) {
@@ -32,10 +31,10 @@ class UsersController {
       console.error(error);
       response.status(500).json({ error: 'Server error' });
     }
+    return response;
   }
 
-
-  static async getMe (request, response) {
+  static async getMe(request, response) {
     try {
       const userToken = request.header('X-Token');
       const authKey = `auth_${userToken}`;
@@ -55,5 +54,4 @@ class UsersController {
   }
 }
 
-  
 export default UsersController;
