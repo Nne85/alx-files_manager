@@ -1,5 +1,6 @@
 import sha1 from 'sha1';
 import { v4 as uuidv4 } from 'uuid';
+import { redisClient } from '../utils/redis';
 import dbClient from '../utils/db';
 
 class AuthController {
@@ -14,6 +15,8 @@ class AuthController {
       const pass = sha1(auth[1]);
 
       const user = await dbClient.getUser({ email });
+      // console.log('USER IN AUTH GETCONNECT()', user);
+
       if (!user) {
         response.status(401).json({ error: 'Unauthorized' });
       }
@@ -25,7 +28,7 @@ class AuthController {
       const token = uuidv4();
       const key = `auth_${token}`;
       const duration = (60 * 60 * 24);
-      await dbClient.set(key, user._id.toString(), duration);
+      await redisClient.set(key, user._id.toString(), duration);
 
       response.status(200).json({ token });
     } catch (err) {
@@ -37,11 +40,13 @@ class AuthController {
   static async getDisconnect(request, response) {
     try {
       const userToken = request.header('X-Token');
-      const userKey = await dbClient.get(`auth_${userToken}`);
+      // console.log('USER TOKEN DISCONNECT', userToken);
+      const userKey = await redisClient.get(`auth_${userToken}`);
+      // console.log('USER KEY DISCONNECT', userKey);
       if (!userKey) {
         response.status(401).json({ error: 'Unauthorized' });
       }
-      await dbClient.del(`auth_${userToken}`);
+      await redisClient.del(`auth_${userToken}`);
       response.status(204).send('Disconnected');
     } catch (err) {
       console.log(err);
