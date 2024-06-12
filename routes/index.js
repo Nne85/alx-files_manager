@@ -1,11 +1,14 @@
 import express from 'express';
-import AuthController from '../controllers/AuthController';
 import AppController from '../controllers/AppController';
 import UsersController from '../controllers/UsersController';
-import FilesController from '../controllers/FilesController';
+import AuthController from '../controllers/AuthController';
 
-const router = express.Router();
-const routeController = (app) => {
+/*
+import FilesController from '../controllers/FilesController';
+*/
+
+function controllerRouting(app) {
+  const router = express.Router();
   app.use('/', router);
 
   router.get('/status', (req, res) => {
@@ -14,10 +17,6 @@ const routeController = (app) => {
 
   router.get('/stats', (req, res) => {
     AppController.getStats(req, res);
-  });
-
-  router.get('/users/me', (req, res) => {
-    UsersController.getMe(req, res);
   });
 
   router.post('/users', (req, res) => {
@@ -32,6 +31,10 @@ const routeController = (app) => {
     AuthController.getDisconnect(req, res);
   });
 
+  router.get('/users/me', (req, res) => {
+    UsersController.getMe(req, res);
+  });
+/*
   router.post('/files', (req, res) => {
     FilesController.postUpload(req, res);
   });
@@ -52,9 +55,10 @@ const routeController = (app) => {
     FilesController.putUnpublish(req, res);
   });
 
-  router.post('/files/:id/data', (req, res) => {
+  router.get('/files/:id/data', (req, res) => {
     FilesController.getFile(req, res);
   });
-};
+*/
+}
 
-export default routeController;
+export default controllerRouting;
